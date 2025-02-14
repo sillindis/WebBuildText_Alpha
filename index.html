@@ -3,13 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <!-- 캐시 방지를 위한 메타 태그 추가 -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Unity Web Player | 숏폼형 퀴즈 솔루션 왓퀴즈!</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="manifest" href="manifest.webmanifest">
   </head>
   <body>
     <div id="unity-container">
@@ -23,12 +20,24 @@
       <div id="unity-warning"> </div>
     </div>
     <script>
+      window.addEventListener("load", function () {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("ServiceWorker.js");
+        }
+      });
+
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
       var loadingBar = document.querySelector("#unity-loading-bar");
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var warningBanner = document.querySelector("#unity-warning");
 
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
       function unityShowBanner(msg, type) {
         function updateBannerVisibility() {
           warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
@@ -47,15 +56,13 @@
         updateBannerVisibility();
       }
 
-      // URL에 타임스탬프 추가하여 캐시 방지
-      var timestamp = new Date().getTime();
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/WebBuildText_Alpha.loader.js?v=" + timestamp;
+      var loaderUrl = buildUrl + "/WebBuildText_Alpha.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/WebBuildText_Alpha.data.unityweb?v=" + timestamp,
-        frameworkUrl: buildUrl + "/WebBuildText_Alpha.framework.js.unityweb?v=" + timestamp,
-        codeUrl: buildUrl + "/WebBuildText_Alpha.wasm.unityweb?v=" + timestamp,
+        dataUrl: buildUrl + "/WebBuildText_Alpha.data.unityweb",
+        frameworkUrl: buildUrl + "/WebBuildText_Alpha.framework.js.unityweb",
+        codeUrl: buildUrl + "/WebBuildText_Alpha.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "숏폼형 퀴즈 솔루션 왓퀴즈!",
@@ -63,7 +70,15 @@
         showBanner: unityShowBanner,
       };
 
+      // By default Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
+
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
         var meta = document.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
