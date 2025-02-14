@@ -18,10 +18,10 @@ self.addEventListener('install', function (e) {
     })());
 });
 
-self.addEventListener('fetch', function(event) {
-    event.respondWith(
-        fetch(event.request, {
-            cache: 'no-store'
-        })
-    );
+self.addEventListener('fetch', function(e) {
+  e.respondWith(
+    fetch(e.request, {
+      cache: 'no-store'
+    })
+  );
 });
