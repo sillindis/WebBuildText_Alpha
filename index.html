@@ -3,14 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>숏폼형 퀴즈 솔루션 왓퀴즈!</title>
+    <title>Unity Web Player | 숏폼형 퀴즈 솔루션 왓퀴즈!</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-    <link rel="manifest" href="manifest.webmanifest">
-    <!-- 캐시 방지를 위한 메타 태그 추가 -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="TemplateData/style.css?v=25.02.14.001">
+    <!-- Remove manifest to prevent PWA caching -->
+    <!-- <link rel="manifest" href="manifest.webmanifest"> -->
   </head>
   <body>
     <div id="unity-container">
@@ -24,20 +21,15 @@
       <div id="unity-warning"> </div>
     </div>
     <script>
-      // ServiceWorker 등록 시 캐시 방지를 위한 버전 파라미터 추가
-      window.addEventListener("load", function () {
-        if ("serviceWorker" in navigator) {
-          navigator.serviceWorker.register("ServiceWorker.js?v=" + new Date().getTime())
-            .then(function(registration) {
-              // 기존 ServiceWorker 제거
-              if (registration.active) {
-                registration.active.unregister().then(function() {
-                  window.location.reload();
-                });
-              }
-            });
-        }
-      });
+      // Remove Service Worker registration
+      // Unregister existing service workers
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+        });
+      }
 
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
@@ -63,17 +55,19 @@
         updateBannerVisibility();
       }
 
+      // Add version parameter to prevent caching
+      var version = "25.02.14.001";
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/WebBuildText_Alpha.loader.js?v=" + new Date().getTime();
+      var loaderUrl = buildUrl + "/WebBuildText_Alpha.loader.js?v=" + version;
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/WebBuildText_Alpha.data.unityweb?v=" + new Date().getTime(),
-        frameworkUrl: buildUrl + "/WebBuildText_Alpha.framework.js.unityweb?v=" + new Date().getTime(),
-        codeUrl: buildUrl + "/WebBuildText_Alpha.wasm.unityweb?v=" + new Date().getTime(),
+        dataUrl: buildUrl + "/WebBuildText_Alpha.data.unityweb?v=" + version,
+        frameworkUrl: buildUrl + "/WebBuildText_Alpha.framework.js.unityweb?v=" + version,
+        codeUrl: buildUrl + "/WebBuildText_Alpha.wasm.unityweb?v=" + version,
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "숏폼형 퀴즈 솔루션 왓퀴즈!",
-        productVersion: "25.02.14.001",
+        productVersion: version,
         showBanner: unityShowBanner,
       };
 
