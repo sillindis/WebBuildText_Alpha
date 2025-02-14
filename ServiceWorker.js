@@ -1,4 +1,4 @@
-const cacheName = "DefaultCompany-ColonverseTogetherProject-1.0";
+const cacheName = "DefaultCompany-숏폼형 퀴즈 솔로션 왓퀴즈!-25.02.14.001";
 const contentToCache = [
     "Build/WebBuildText_Alpha.loader.js",
     "Build/WebBuildText_Alpha.framework.js",
