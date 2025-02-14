@@ -1,33 +1,33 @@
 const cacheName = "DefaultCompany-숏폼형 퀴즈 솔루션 왓퀴즈!-25.02.14.001";
-const contentToCache = [
-    "Build/WebBuildText_Alpha.loader.js",
-    "Build/WebBuildText_Alpha.framework.js.unityweb",
-    "Build/WebBuildText_Alpha.data.unityweb",
-    "Build/WebBuildText_Alpha.wasm.unityweb",
-    "TemplateData/style.css"
-
-];
 
 self.addEventListener('install', function (e) {
     console.log('[Service Worker] Install');
-    
-    e.waitUntil((async function () {
-      const cache = await caches.open(cacheName);
-      console.log('[Service Worker] Caching all: app shell and content');
-      await cache.addAll(contentToCache);
-    })());
+    self.skipWaiting(); // 즉시 활성화
+});
+
+self.addEventListener('activate', function(e) {
+    console.log('[Service Worker] Activate');
+    // 기존 캐시 모두 삭제
+    e.waitUntil(
+        caches.keys().then(function(keyList) {
+            return Promise.all(keyList.map(function(key) {
+                return caches.delete(key);
+            }));
+        })
+    );
 });
 
 self.addEventListener('fetch', function (e) {
-    e.respondWith((async function () {
-      let response = await caches.match(e.request);
-      console.log(`[Service Worker] Fetching resource: ${e.request.url}`);
-      if (response) { return response; }
-
-      response = await fetch(e.request);
-      const cache = await caches.open(cacheName);
-      console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
-      cache.put(e.request, response.clone());
-      return response;
-    })());
+    // 캐시를 사용하지 않고 항상 네트워크에서 새로 로드
+    e.respondWith(
+        fetch(e.request, {
+            cache: 'no-store',
+            headers: {
+                'Cache-Control': 'no-cache'
+            }
+        }).catch(function() {
+            console.log('[Service Worker] Fetch failed');
+            return new Response('Fetch failed');
+        })
+    );
 });
