@@ -6,16 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=yes">
-    <style>
-      body {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-    </style>
-    <title>Unity Web Player | 숏폼형 퀴즈 솔루션 왓퀴즈!</title>
+    <title>숏폼형 퀴즈 솔루션 왓퀴즈!</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <link rel="manifest" href="manifest.webmanifest">
@@ -121,33 +112,7 @@
           progressBarFull.style.width = 100 * progress + "%";
         }).then((unityInstance) => {
           loadingBar.style.display = "none";
-          
-          // 한국어 입력 지원을 위한 설정
-          if (canvas) {
-            canvas.addEventListener('click', function() {
-              if (document.activeElement === canvas) {
-                // IME 지원 활성화
-                if (typeof canvas.inputMode !== 'undefined') {
-                  canvas.inputMode = 'text';
-                }
-                // 자동완성 및 모바일 키보드 설정
-                canvas.setAttribute('autocomplete', 'on');
-                canvas.setAttribute('inputmode', 'text');
-              }
-            });
-          }
-          
-          // 키보드 고정 코드 추가
-          if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            // 키보드가 나타나도 화면 고정 유지
-            window.addEventListener('resize', function() {
-              window.scrollTo(0, 0);
-              document.body.scrollTop = 0;
-            });
-          }
-          
-          // 전역 객체에 인스턴스 저장 (필요시 외부 스크립트에서 접근 가능)
-          window.unityInstance = unityInstance;
+          window.unityInstance = unityInstance; // 전역 접근 가능하게 설정
         }).catch((message) => {
           alert(message);
         });
