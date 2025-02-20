@@ -23,21 +23,23 @@
       <div id="unity-warning"> </div>
     </div>
     <script>
-      // Add a version timestamp to prevent caching
+      // 캐시 방지를 위한 타임스탬프 생성
       const timestamp = new Date().getTime();
-
-      // Update script loading with cache-busting
+      
       window.addEventListener("load", function () {
         if ("serviceWorker" in navigator) {
+          // 서비스 워커 등록 시 타임스탬프 추가
           navigator.serviceWorker.register("ServiceWorker.js?v=" + timestamp)
             .then(registration => {
-              // Check for updates every hour
+              // 주기적으로 서비스 워커 업데이트 확인 (1시간마다)
               setInterval(() => {
                 registration.update();
                 console.log('[App] Checking for Service Worker updates');
               }, 60 * 60 * 1000);
             })
-            .catch(err => console.error('[App] Service worker registration failed:', err));
+            .catch(err => {
+              console.error('[App] Service worker registration failed:', err);
+            });
         }
       });
 
@@ -71,8 +73,8 @@
         updateBannerVisibility();
       }
 
-      // Add cache-busting to Unity resources
       var buildUrl = "Build";
+      // 모든 리소스 URL에 타임스탬프 추가
       var loaderUrl = buildUrl + "/WebBuildText_Alpha.loader.js?v=" + timestamp;
       var config = {
         arguments: [],
@@ -110,10 +112,37 @@
           progressBarFull.style.width = 100 * progress + "%";
         }).then((unityInstance) => {
           loadingBar.style.display = "none";
+          
+          // 한국어 입력 지원을 위한 설정
+          if (canvas) {
+            canvas.addEventListener('click', function() {
+              if (document.activeElement === canvas) {
+                // IME 지원 활성화
+                if (typeof canvas.inputMode !== 'undefined') {
+                  canvas.inputMode = 'text';
+                }
+                // 자동완성 및 모바일 키보드 설정
+                canvas.setAttribute('autocomplete', 'on');
+                canvas.setAttribute('inputmode', 'text');
+              }
+            });
+          }
+          
+          // 전역 객체에 인스턴스 저장 (필요시 외부 스크립트에서 접근 가능)
+          window.unityInstance = unityInstance;
         }).catch((message) => {
           alert(message);
         });
       };
+      
+      // 캐시 방지를 위한 헤더 추가
+      var xhr = new XMLHttpRequest();
+      xhr.open('HEAD', script.src, true);
+      xhr.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      xhr.setRequestHeader('Pragma', 'no-cache');
+      xhr.setRequestHeader('Expires', '0');
+      xhr.send();
+      
       document.body.appendChild(script);
     </script>
   </body>
