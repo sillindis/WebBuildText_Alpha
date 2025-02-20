@@ -3,7 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | 숏폼형 퀴즈 솔루션 왓퀴즈!</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>숏폼형 퀴즈 솔루션 왓퀴즈!</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <link rel="manifest" href="manifest.webmanifest">
@@ -20,9 +23,23 @@
       <div id="unity-warning"> </div>
     </div>
     <script>
+      // 캐시 방지를 위한 타임스탬프 생성
+      const timestamp = new Date().getTime();
+      
       window.addEventListener("load", function () {
         if ("serviceWorker" in navigator) {
-          navigator.serviceWorker.register("ServiceWorker.js");
+          // 서비스 워커 등록 시 타임스탬프 추가
+          navigator.serviceWorker.register("ServiceWorker.js?v=" + timestamp)
+            .then(registration => {
+              // 주기적으로 서비스 워커 업데이트 확인 (1시간마다)
+              setInterval(() => {
+                registration.update();
+                console.log('[App] Checking for Service Worker updates');
+              }, 60 * 60 * 1000);
+            })
+            .catch(err => {
+              console.error('[App] Service worker registration failed:', err);
+            });
         }
       });
 
@@ -57,12 +74,13 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/WebBuildText_Alpha.loader.js";
+      // 모든 리소스 URL에 타임스탬프 추가
+      var loaderUrl = buildUrl + "/TemplateData.loader.js?v=" + timestamp;
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/WebBuildText_Alpha.data.unityweb",
-        frameworkUrl: buildUrl + "/WebBuildText_Alpha.framework.js.unityweb",
-        codeUrl: buildUrl + "/WebBuildText_Alpha.wasm.unityweb",
+        dataUrl: buildUrl + "/TemplateData.data.unityweb?v=" + timestamp,
+        frameworkUrl: buildUrl + "/TemplateData.framework.js.unityweb?v=" + timestamp,
+        codeUrl: buildUrl + "/TemplateData.wasm.unityweb?v=" + timestamp,
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "숏폼형 퀴즈 솔루션 왓퀴즈!",
@@ -94,10 +112,20 @@
           progressBarFull.style.width = 100 * progress + "%";
         }).then((unityInstance) => {
           loadingBar.style.display = "none";
+          window.unityInstance = unityInstance; // 전역 접근 가능하게 설정
         }).catch((message) => {
           alert(message);
         });
       };
+      
+      // 캐시 방지를 위한 헤더 추가
+      var xhr = new XMLHttpRequest();
+      xhr.open('HEAD', script.src, true);
+      xhr.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      xhr.setRequestHeader('Pragma', 'no-cache');
+      xhr.setRequestHeader('Expires', '0');
+      xhr.send();
+      
       document.body.appendChild(script);
     </script>
   </body>
