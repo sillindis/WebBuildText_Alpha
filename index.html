@@ -3,14 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>숏폼형 퀴즈 솔루션 왓퀴즈!</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <link rel="manifest" href="manifest.webmanifest">
-    <!-- Cache 비활성화를 위한 메타 태그 추가 -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
   </head>
   <body>
     <div id="unity-container">
@@ -24,10 +23,14 @@
       <div id="unity-warning"> </div>
     </div>
     <script>
-      // Service Worker 등록 시 캐시 비활성화
+      // Add version query parameter to prevent caching
+      function addVersionToUrl(url) {
+        return `${url}?v=${new Date().getTime()}`;
+      }
+
       window.addEventListener("load", function () {
         if ("serviceWorker" in navigator) {
-          navigator.serviceWorker.register("ServiceWorker.js", { updateViaCache: 'none' });
+          navigator.serviceWorker.register("ServiceWorker.js");
         }
       });
 
@@ -56,14 +59,12 @@
       }
 
       var buildUrl = "Build";
-      // URL에 타임스탬프 추가하여 캐시 방지
-      var timestamp = new Date().getTime();
-      var loaderUrl = buildUrl + "/WebBuildText_Alpha.loader.js?v=" + timestamp;
+      var loaderUrl = addVersionToUrl(buildUrl + "/WebBuildText_Alpha.loader.js");
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/WebBuildText_Alpha.data.unityweb?v=" + timestamp,
-        frameworkUrl: buildUrl + "/WebBuildText_Alpha.framework.js.unityweb?v=" + timestamp,
-        codeUrl: buildUrl + "/WebBuildText_Alpha.wasm.unityweb?v=" + timestamp,
+        dataUrl: addVersionToUrl(buildUrl + "/WebBuildText_Alpha.data.unityweb"),
+        frameworkUrl: addVersionToUrl(buildUrl + "/WebBuildText_Alpha.framework.js.unityweb"),
+        codeUrl: addVersionToUrl(buildUrl + "/WebBuildText_Alpha.wasm.unityweb"),
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "숏폼형 퀴즈 솔루션 왓퀴즈!",

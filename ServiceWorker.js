@@ -9,27 +9,42 @@ const contentToCache = [
 
 self.addEventListener('install', function (e) {
     console.log('[Service Worker] Install');
-    // 기존 캐시 삭제
+    e.waitUntil((async function () {
+        const cache = await caches.open(cacheName);
+        console.log('[Service Worker] Caching all: app shell and content');
+        await cache.addAll(contentToCache);
+    })());
+});
+
+self.addEventListener('activate', function(e) {
     e.waitUntil(
-        caches.keys().then(function(cacheNames) {
-            return Promise.all(
-                cacheNames.map(function(cache) {
-                    return caches.delete(cache);
-                })
-            );
+        caches.keys().then(function(keyList) {
+            return Promise.all(keyList.map(function(key) {
+                if(key !== cacheName) {
+                    return caches.delete(key);
+                }
+            }));
         })
     );
 });
 
 self.addEventListener('fetch', function (e) {
-    // 네트워크 우선 전략으로 변경
-    e.respondWith(
-        fetch(e.request)
-            .then(function(response) {
-                return response;
-            })
-            .catch(function() {
-                return caches.match(e.request);
-            })
-    );
+    // Skip the cache for Unity build files
+    if (e.request.url.includes('Build/') || e.request.url.includes('TemplateData/')) {
+        e.respondWith(
+            fetch(e.request)
+        );
+        return;
+    }
+
+    // For other resources, use the cache-first strategy
+    e.respondWith((async function () {
+        const r = await caches.match(e.request);
+        if (r) { return r; }
+        
+        const response = await fetch(e.request);
+        const cache = await caches.open(cacheName);
+        cache.put(e.request, response.clone());
+        return response;
+    })());
 });
