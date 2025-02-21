@@ -1,9 +1,9 @@
 const cacheName = "DefaultCompany-숏폼형 퀴즈 솔루션 왓퀴즈!-25.02.21.001";
 const contentToCache = [
     "Build/WebBuildText_Alpha.loader.js",
-    "Build/WebBuildText_Alpha.framework.js.unityweb",
-    "Build/WebBuildText_Alpha.data.unityweb",
-    "Build/WebBuildText_Alpha.wasm.unityweb",
+    "Build/WebBuildText_Alpha.framework.js",
+    "Build/WebBuildText_Alpha.data",
+    "Build/WebBuildText_Alpha.wasm",
     "TemplateData/style.css"
 
 ];
