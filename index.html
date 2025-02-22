@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>숏폼형 퀴즈 솔루션 왓퀴즈!</title>
-    <!-- 캐시 방지를 위한 메타 태그 추가 -->
+    <!-- Cache-control headers -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <title>숏폼형 퀴즈 솔루션 왓퀴즈!</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-    <!-- manifest 제거 (ServiceWorker 캐싱 방지) -->
+    <link rel="manifest" href="manifest.webmanifest">
   </head>
   <body>
     <div id="unity-container">
@@ -24,7 +24,16 @@
       <div id="unity-warning"> </div>
     </div>
     <script>
-      // ServiceWorker 등록 코드 제거
+      // Add timestamp to prevent caching
+      function addTimestamp(url) {
+        return url + '?t=' + new Date().getTime();
+      }
+
+      window.addEventListener("load", function () {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("ServiceWorker.js");
+        }
+      });
 
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
@@ -51,14 +60,12 @@
       }
 
       var buildUrl = "Build";
-      // 캐시 방지를 위한 버전 파라미터 추가
-      var timestamp = new Date().getTime();
-      var loaderUrl = buildUrl + "/WebBuildText_Alpha.loader.js?v=" + timestamp;
+      var loaderUrl = addTimestamp(buildUrl + "/WebBuildText_Alpha.loader.js");
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/WebBuildText_Alpha.data.unityweb?v=" + timestamp,
-        frameworkUrl: buildUrl + "/WebBuildText_Alpha.framework.js.unityweb?v=" + timestamp,
-        codeUrl: buildUrl + "/WebBuildText_Alpha.wasm.unityweb?v=" + timestamp,
+        dataUrl: addTimestamp(buildUrl + "/WebBuildText_Alpha.data.unityweb"),
+        frameworkUrl: addTimestamp(buildUrl + "/WebBuildText_Alpha.framework.js.unityweb"),
+        codeUrl: addTimestamp(buildUrl + "/WebBuildText_Alpha.wasm.unityweb"),
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "숏폼형 퀴즈 솔루션 왓퀴즈!",

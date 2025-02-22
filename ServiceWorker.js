@@ -9,32 +9,23 @@ const contentToCache = [
 
 self.addEventListener('install', function (e) {
     console.log('[Service Worker] Install');
-    // 캐시 설치 과정 스킵
-    self.skipWaiting();
+    e.waitUntil((async function () {
+      const cache = await caches.open(cacheName);
+      console.log('[Service Worker] Caching all: app shell and content');
+      await cache.addAll(contentToCache);
+    })());
 });
 
 self.addEventListener('fetch', function (e) {
+    // Skip the cache and always fetch from network
     e.respondWith(
         fetch(e.request)
-            .then(function(response) {
+            .then(response => {
                 return response;
             })
-            .catch(function() {
-                // 네트워크 요청 실패시에만 캐시 사용
+            .catch(() => {
+                // Only use cache as fallback if network request fails
                 return caches.match(e.request);
             })
-    );
-});
-
-// 이전 캐시 정리
-self.addEventListener('activate', function(e) {
-    e.waitUntil(
-        caches.keys().then(function(keyList) {
-            return Promise.all(keyList.map(function(key) {
-                if (key !== cacheName) {
-                    return caches.delete(key);
-                }
-            }));
-        })
     );
 });
