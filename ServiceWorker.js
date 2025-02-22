@@ -1,4 +1,4 @@
-const cacheName = "DefaultCompany-숏폼형 퀴즈 솔루션 왓퀴즈!-25.02.21.001";
+const cacheName = "DefaultCompany-숏폼형 퀴즈 솔루션 왓퀴즈!-25.02.22.001";
 const contentToCache = [
     "Build/WebBuildText_Alpha.loader.js",
     "Build/WebBuildText_Alpha.framework.js.unityweb",
@@ -17,14 +17,10 @@ self.addEventListener('install', function (e) {
 });
 
 self.addEventListener('fetch', function (e) {
-    // Skip the cache and always fetch from network
+    // Always try network first, fall back to cache if network fails
     e.respondWith(
         fetch(e.request)
-            .then(response => {
-                return response;
-            })
             .catch(() => {
-                // Only use cache as fallback if network request fails
                 return caches.match(e.request);
             })
     );

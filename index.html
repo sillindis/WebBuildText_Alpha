@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <!-- Cache-control headers -->
+    <!-- Cache control headers -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -26,7 +26,7 @@
     <script>
       // Add timestamp to prevent caching
       function addTimestamp(url) {
-        return url + '?t=' + new Date().getTime();
+        return `${url}?v=${new Date().getTime()}`;
       }
 
       window.addEventListener("load", function () {
@@ -69,7 +69,7 @@
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "숏폼형 퀴즈 솔루션 왓퀴즈!",
-        productVersion: "25.02.21.001",
+        productVersion: "25.02.22.001",
         showBanner: unityShowBanner,
       };
 
